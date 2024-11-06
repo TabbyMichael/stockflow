@@ -1,0 +1,18 @@
+/* Verification Input Styles */
+.verification-input {
+  @apply flex gap-2;
+}
+
+.verification-character {
+  @apply w-12 h-14 border-2 rounded-md text-center text-lg font-semibold 
+    bg-background border-input focus:border-primary focus:ring-1 focus:ring-primary
+    transition-all duration-200;
+}
+
+.verification-character--inactive {
+  @apply border-dashed;
+}
+
+.verification-character--selected {
+  @apply border-primary;
+} 

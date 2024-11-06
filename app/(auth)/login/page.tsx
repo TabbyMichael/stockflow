@@ -46,22 +46,14 @@ export default function LoginPage() {
 
     try {
       const formData = new FormData(event.target as HTMLFormElement);
-      const result = await signIn(
+      await signIn(
         formData.get("email") as string,
         formData.get("password") as string
       );
-      
-      // Check if email is verified
-      if (!result.user.emailVerified) {
-        await auth.signOut();
-        toast.error("Please verify your email address first");
-        return;
-      }
-
       router.push("/dashboard");
       toast.success("Successfully logged in!");
-    } catch (error: any) {
-      toast.error(error.message || "Invalid credentials");
+    } catch (error) {
+      toast.error("Invalid credentials");
     } finally {
       setIsLoading(false);
     }

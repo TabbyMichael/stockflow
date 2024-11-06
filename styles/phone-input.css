@@ -1,0 +1,49 @@
+.react-tel-input .form-control {
+  @apply w-full h-10 px-3 py-2 bg-background text-foreground border-input;
+  padding-left: 48px !important;
+  color: black !important;
+}
+
+.react-tel-input .selected-flag {
+  @apply bg-background hover:bg-muted;
+  width: 38px !important;
+}
+
+.react-tel-input .country-list {
+  @apply bg-background border-input;
+  margin: 0 !important;
+  color: black !important;
+}
+
+.react-tel-input .country-list .country {
+  @apply hover:bg-muted;
+  color: black !important;
+}
+
+.react-tel-input .country-list .country.highlight {
+  @apply bg-muted;
+}
+
+.react-tel-input .flag-dropdown {
+  @apply border-input bg-background;
+  border-right: none !important;
+}
+
+.react-tel-input .country-list .country .dial-code {
+  color: black !important;
+}
+
+.react-tel-input .country-list .country .country-name {
+  color: black !important;
+}
+
+/* For dark mode support */
+@media (prefers-color-scheme: dark) {
+  .react-tel-input .form-control,
+  .react-tel-input .country-list,
+  .react-tel-input .country-list .country,
+  .react-tel-input .country-list .country .dial-code,
+  .react-tel-input .country-list .country .country-name {
+    color: white !important;
+  }
+} 

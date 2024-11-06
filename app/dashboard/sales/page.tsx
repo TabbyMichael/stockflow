@@ -49,6 +49,9 @@ export default function SalesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+            <Badge variant="default" className="text-green-600 bg-green-100">
+              +12%
+            </Badge>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1,234</div>
@@ -115,7 +118,7 @@ export default function SalesPage() {
                   </TableCell>
                   <TableCell>{order.items}</TableCell>
                   <TableCell>
-                    <Badge variant="success">{order.paymentStatus}</Badge>
+                    <Badge variant="default">{order.paymentStatus}</Badge>
                   </TableCell>
                 </TableRow>
               ))}

@@ -127,7 +127,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{ 
       user,
       loading,
-      signIn,
+      signIn: async (email: string, password: string) => {
+        await signIn(email, password);
+      },
       signUp,
       signInWithGoogle,
       logout,

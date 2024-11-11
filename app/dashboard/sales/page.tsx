@@ -118,7 +118,7 @@ export default function SalesPage() {
                   </TableCell>
                   <TableCell>{order.items}</TableCell>
                   <TableCell>
-                    <Badge variant="default">{order.paymentStatus}</Badge>
+                    <Badge variant="secondary">{order.paymentStatus}</Badge>
                   </TableCell>
                 </TableRow>
               ))}

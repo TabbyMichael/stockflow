@@ -21,3 +21,5 @@ runConfig:
   # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
   # - variable: MY_SECRET
   #   secret: mySecretRef
+name: Deploy to Firebase Hosting
+uses: FirebaseExtended/action-hosting-deploy@v0.9.0

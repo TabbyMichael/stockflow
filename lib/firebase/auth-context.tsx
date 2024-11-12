@@ -63,32 +63,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
+    if (auth) {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        setLoading(false);
+      });
 
-    return () => unsubscribe();
+      return () => unsubscribe();
+    }
   }, []);
 
   const signIn = async (email: string, password: string): Promise<UserCredential> => {
+    if (!auth) throw new Error('Auth not initialized');
     return await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signUp = async (email: string, password: string): Promise<UserCredential> => {
+    if (!auth) throw new Error('Auth not initialized');
     return await createUserWithEmailAndPassword(auth, email, password);
   };
 
   const signInWithGoogle = async (): Promise<UserCredential> => {
+    if (!auth) throw new Error('Auth not initialized');
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider);
   };
 
   const logout = async (): Promise<void> => {
+    if (!auth) throw new Error('Auth not initialized');
     await firebaseSignOut(auth);
   };
 
   const signInWithPhone = async (phoneNumber: string): Promise<any> => {
+    if (!auth) throw new Error('Auth not initialized');
     try {
       // Clear existing recaptcha if it exists
       if (window.recaptchaVerifier) {
@@ -133,6 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const confirmPhoneCode = async (verificationId: string, code: string): Promise<void> => {
+    if (!auth) throw new Error('Auth not initialized');
     try {
       const credential = PhoneAuthProvider.credential(verificationId, code);
       await signInWithCredential(auth, credential);

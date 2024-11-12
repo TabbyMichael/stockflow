@@ -13,11 +13,23 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-export const firebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-export const auth = getAuth(firebaseApp);
-export const db = getFirestore(firebaseApp);
-export const analytics = typeof window !== 'undefined' ? getAnalytics(firebaseApp) : null; 
+// Check if all required Firebase config values are present
+const isFirebaseConfigValid = Object.values(firebaseConfig).every(value => value !== undefined);
 
-// Enable phone auth persistence
-auth.settings.appVerificationDisabledForTesting = process.env.NODE_ENV === 'development'; 
+if (!isFirebaseConfigValid) {
+  console.error('Firebase configuration is incomplete. Check your environment variables.');
+}
+
+// Initialize Firebase only if config is valid
+export const firebaseApp = isFirebaseConfigValid 
+  ? (getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0])
+  : null;
+
+export const auth = firebaseApp ? getAuth(firebaseApp) : null;
+export const db = firebaseApp ? getFirestore(firebaseApp) : null;
+export const analytics = typeof window !== 'undefined' && firebaseApp ? getAnalytics(firebaseApp) : null;
+
+// Enable phone auth persistence only if auth is initialized
+if (auth) {
+  auth.settings.appVerificationDisabledForTesting = process.env.NODE_ENV === 'development';
+}

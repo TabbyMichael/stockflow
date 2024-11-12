@@ -5,7 +5,7 @@ import {
   User,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signOut,
+  signOut as firebaseSignOut,
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
@@ -28,7 +28,28 @@ interface AuthContextType {
   confirmPhoneCode: (verificationId: string, code: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+export const AuthContext = createContext<AuthContextType>({
+  user: null,
+  loading: true,
+  signIn: async () => {
+    throw new Error('AuthContext not initialized');
+  },
+  signUp: async () => {
+    throw new Error('AuthContext not initialized');
+  },
+  signInWithGoogle: async () => {
+    throw new Error('AuthContext not initialized');
+  },
+  logout: async () => {
+    throw new Error('AuthContext not initialized');
+  },
+  signInWithPhone: async () => {
+    throw new Error('AuthContext not initialized');
+  },
+  confirmPhoneCode: async () => {
+    throw new Error('AuthContext not initialized');
+  },
+});
 
 declare global {
   interface Window {
@@ -51,11 +72,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string): Promise<UserCredential> => {
-    return signInWithEmailAndPassword(auth, email, password);
+    return await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signUp = async (email: string, password: string): Promise<UserCredential> => {
-    return createUserWithEmailAndPassword(auth, email, password);
+    return await createUserWithEmailAndPassword(auth, email, password);
   };
 
   const signInWithGoogle = async (): Promise<UserCredential> => {
@@ -64,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async (): Promise<void> => {
-    await signOut(auth);
+    await firebaseSignOut(auth);
   };
 
   const signInWithPhone = async (phoneNumber: string): Promise<any> => {
@@ -124,22 +145,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const value = {
+    user,
+    loading,
+    signIn,
+    signUp,
+    signInWithGoogle,
+    logout,
+    signInWithPhone,
+    confirmPhoneCode,
+  };
+
   return (
-    <AuthContext.Provider value={{ 
-      user,
-      loading,
-      signIn: async (email: string, password: string) => {
-        await signIn(email, password);
-      },
-      signUp,
-      signInWithGoogle,
-      logout,
-      signInWithPhone,
-      confirmPhoneCode,
-    }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export const useAuth = () => useContext(AuthContext); 
+export const useAuth = () => {
+  return useContext(AuthContext);
+}; 

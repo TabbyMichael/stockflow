@@ -1,11 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { DashboardShell } from "@/components/dashboard/shell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Plus, Filter } from "lucide-react";
+import { Search, Plus, Filter, MoreHorizontal, Pencil, Trash } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { InventoryFormDialog, DeleteItemDialog } from "@/components/inventory/inventory-dialogs";
 
 const inventoryData = [
   {
@@ -21,6 +30,40 @@ const inventoryData = [
 ];
 
 export default function InventoryPage() {
+  const [formDialogOpen, setFormDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [dialogMode, setDialogMode] = useState<"add" | "edit">("add");
+
+  const handleAdd = () => {
+    setDialogMode("add");
+    setSelectedItem(null);
+    setFormDialogOpen(true);
+  };
+
+  const handleEdit = (item: any) => {
+    setDialogMode("edit");
+    setSelectedItem(item);
+    setFormDialogOpen(true);
+  };
+
+  const handleDelete = (item: any) => {
+    setSelectedItem(item);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleFormSubmit = async (data: any) => {
+    // TODO: Implement form submission
+    console.log("Form submitted:", data);
+    setFormDialogOpen(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    // TODO: Implement delete
+    console.log("Delete confirmed:", selectedItem);
+    setDeleteDialogOpen(false);
+  };
+
   return (
     <DashboardShell>
       <div className="flex items-center justify-between space-y-2">
@@ -33,7 +76,7 @@ export default function InventoryPage() {
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search inventory..." className="pl-8 w-[300px]" />
           </div>
-          <Button>
+          <Button onClick={handleAdd}>
             <Plus className="mr-2 h-4 w-4" /> Add Item
           </Button>
         </div>
@@ -66,6 +109,7 @@ export default function InventoryPage() {
                 <TableHead>Status</TableHead>
                 <TableHead>Location</TableHead>
                 <TableHead>Last Updated</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -75,15 +119,56 @@ export default function InventoryPage() {
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{item.category}</TableCell>
                   <TableCell>{item.quantity}</TableCell>
-                  <TableCell>{item.status}</TableCell>
+                  <TableCell>
+                    <Badge variant={item.status === "In Stock" ? "default" : "destructive"}>
+                      {item.status}
+                    </Badge>
+                  </TableCell>
                   <TableCell>{item.location}</TableCell>
                   <TableCell>{item.lastUpdated}</TableCell>
+                  <TableCell className="text-right">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEdit(item)}>
+                          <Pencil className="mr-2 h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => handleDelete(item)}
+                          className="text-destructive"
+                        >
+                          <Trash className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </CardContent>
       </Card>
+
+      <InventoryFormDialog
+        open={formDialogOpen}
+        onOpenChange={setFormDialogOpen}
+        initialData={selectedItem}
+        mode={dialogMode}
+        onSubmit={handleFormSubmit}
+      />
+
+      <DeleteItemDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        onConfirm={handleDeleteConfirm}
+        itemName={selectedItem?.name || ""}
+      />
     </DashboardShell>
   );
 } 

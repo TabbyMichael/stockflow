@@ -12,16 +12,17 @@ import {
   PhoneAuthProvider,
   signInWithPhoneNumber,
   RecaptchaVerifier,
-  signInWithCredential
+  signInWithCredential,
+  UserCredential
 } from "firebase/auth";
 import { auth } from "./config";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<UserCredential>;
+  signUp: (email: string, password: string) => Promise<UserCredential>;
+  signInWithGoogle: () => Promise<UserCredential>;
   logout: () => Promise<void>;
   signInWithPhone: (phoneNumber: string) => Promise<any>;
   confirmPhoneCode: (verificationId: string, code: string) => Promise<void>;
@@ -49,24 +50,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    return await signInWithEmailAndPassword(auth, email, password);
+  const signIn = async (email: string, password: string): Promise<UserCredential> => {
+    return signInWithEmailAndPassword(auth, email, password);
   };
 
-  const signUp = async (email: string, password: string) => {
-    await createUserWithEmailAndPassword(auth, email, password);
+  const signUp = async (email: string, password: string): Promise<UserCredential> => {
+    return createUserWithEmailAndPassword(auth, email, password);
   };
 
-  const signInWithGoogle = async () => {
+  const signInWithGoogle = async (): Promise<UserCredential> => {
     const provider = new GoogleAuthProvider();
-    await signInWithPopup(auth, provider);
+    return signInWithPopup(auth, provider);
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     await signOut(auth);
   };
 
-  const signInWithPhone = async (phoneNumber: string) => {
+  const signInWithPhone = async (phoneNumber: string): Promise<any> => {
     try {
       // Clear existing recaptcha if it exists
       if (window.recaptchaVerifier) {
@@ -110,7 +111,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const confirmPhoneCode = async (verificationId: string, code: string) => {
+  const confirmPhoneCode = async (verificationId: string, code: string): Promise<void> => {
     try {
       const credential = PhoneAuthProvider.credential(verificationId, code);
       await signInWithCredential(auth, credential);

@@ -1,7 +1,7 @@
-import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getAnalytics } from "firebase/analytics";
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
+import { getFirestore, Firestore } from "firebase/firestore";
+import { getAnalytics, Analytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,7 +14,7 @@ const firebaseConfig = {
 };
 
 // Only initialize Firebase on the client side
-const initializeFirebase = () => {
+const initializeFirebase = (): FirebaseApp | null => {
   if (typeof window === 'undefined') return null;
   
   const isFirebaseConfigValid = Object.values(firebaseConfig).every(value => value !== undefined);
@@ -27,9 +27,10 @@ const initializeFirebase = () => {
 };
 
 export const firebaseApp = initializeFirebase();
-export const auth = typeof window !== 'undefined' ? getAuth(firebaseApp) : null;
-export const db = typeof window !== 'undefined' ? getFirestore(firebaseApp) : null;
-export const analytics = typeof window !== 'undefined' && firebaseApp ? getAnalytics(firebaseApp) : null;
+
+export const auth: Auth | null = typeof window !== 'undefined' && firebaseApp ? getAuth(firebaseApp) : null;
+export const db: Firestore | null = typeof window !== 'undefined' && firebaseApp ? getFirestore(firebaseApp) : null;
+export const analytics: Analytics | null = typeof window !== 'undefined' && firebaseApp ? getAnalytics(firebaseApp) : null;
 
 // Enable phone auth persistence only if auth is initialized and in browser
 if (typeof window !== 'undefined' && auth) {

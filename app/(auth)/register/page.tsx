@@ -17,6 +17,9 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import VerificationInput from "react-verification-input";
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
+
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");

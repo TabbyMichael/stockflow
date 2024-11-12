@@ -4,20 +4,34 @@ import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAN7gL2QQTfCQngVQgmZ20UGjyTXDuQhlA",
-  authDomain: "stockflow-d2f3f.firebaseapp.com",
-  projectId: "stockflow-d2f3f",
-  storageBucket: "stockflow-d2f3f.firebasestorage.app",
-  messagingSenderId: "287381457743",
-  appId: "1:287381457743:web:87f69c6beaf03fa2b0133a",
-  measurementId: "G-VWR22X8H7N"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-export const firebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-export const auth = getAuth(firebaseApp);
-export const db = getFirestore(firebaseApp);
-export const analytics = typeof window !== 'undefined' ? getAnalytics(firebaseApp) : null; 
+// Only initialize Firebase on the client side
+const initializeFirebase = () => {
+  if (typeof window === 'undefined') return null;
+  
+  const isFirebaseConfigValid = Object.values(firebaseConfig).every(value => value !== undefined);
+  if (!isFirebaseConfigValid) {
+    console.error('Firebase configuration is incomplete. Check your environment variables.');
+    return null;
+  }
 
-// Enable phone auth persistence
-auth.settings.appVerificationDisabledForTesting = process.env.NODE_ENV === 'development'; 
+  return getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+};
+
+export const firebaseApp = initializeFirebase();
+export const auth = typeof window !== 'undefined' ? getAuth(firebaseApp) : null;
+export const db = typeof window !== 'undefined' ? getFirestore(firebaseApp) : null;
+export const analytics = typeof window !== 'undefined' && firebaseApp ? getAnalytics(firebaseApp) : null;
+
+// Enable phone auth persistence only if auth is initialized and in browser
+if (typeof window !== 'undefined' && auth) {
+  auth.settings.appVerificationDisabledForTesting = process.env.NODE_ENV === 'development';
+}
